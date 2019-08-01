@@ -79,16 +79,16 @@ if(isset($_POST['manageCategory'])){
  }
  */
 
-//-------- request receeive from manage.js for delete cat records---------
- /*
- if(isset($_POST['deleteCategory']) AND isset($_POST['id'])){
-    $delcat = $_POST['id'];
- 
-    $delCategory = $cat->deleteCategory($delcat);
+if(isset($_POST['deleteCategory']) AND isset($_POST['id'])){
+    $deleteCat = $_POST['id'];
+
+    $delCategory = $cat->deleteCategory($deleteCat);
     echo $delCategory;
     exit();    
 
- }*/
+ }
+ 
+ 
  
 if(isset($_POST['updateCategory']) AND isset($_POST['id'])){
     $catId = $_POST['id'];
@@ -98,6 +98,8 @@ if(isset($_POST['updateCategory']) AND isset($_POST['id'])){
     exit();
     
 }
+// update record after getting data
+
 if(isset($_POST['updt_cat'])){
     $catId = $_POST['catId'];
     $category_name = $_POST['updt_cat'];
@@ -128,6 +130,13 @@ if(isset($_POST['manageBrand'])){
     }
  }*/
 
+if(isset($_POST['deleteBrand']) AND isset($_POST['id'])){
+    $deleteBr = $_POST['id'];
+    $delBrand = $br->deleteBrand($deleteBr);    
+    echo $delBrand;
+    exit();    
+ }
+
 if(isset($_POST['updateBrand']) AND isset($_POST['id'])){
     $bId = $_POST['id'];
     
@@ -136,6 +145,7 @@ if(isset($_POST['updateBrand']) AND isset($_POST['id'])){
     exit();
     
 }
+// update record after getting data
 
 if(isset($_POST['updt_br'])){
     $bId = $_POST['brId'];
@@ -144,6 +154,13 @@ if(isset($_POST['updt_br'])){
     echo $result;
     exit();
 }
+if(isset($_POST['deleteProduct']) AND isset($_POST['id'])){
+    $delete = $_POST['id'];
+    $delPro = $pr->deleteProduct($delete);    
+    echo $delPro;
+    exit();    
+
+ }
 
 if(isset($_POST['updateProduct']) AND isset($_POST['id'])){
     $pId = $_POST['id'];
@@ -162,14 +179,15 @@ if(isset($_POST['updt_pr'])){
    $product_price = $_POST['product_price'];
    $product_qty = $_POST['product_qty'];
    $date = $_POST['added_date'];
-   $result = $pr->updateProduct($pId,$cId,$bId,$product_name,$product_price,$product_qty,$date);
+   $status =$_POST['updt_stat'];
+   $result = $pr->updateProduct($pId,$cId,$bId,$product_name,$product_price,$product_qty,$date,$status);
    echo $result;
    exit();
 }
 
 //------Order Processing--------------
 if(isset($_POST['getNewOrderForm'])){
-   $result = $pr->getAllProduct();
+   $result = $pr->getAllActiveProduct();
    ?>
    <tr>
       

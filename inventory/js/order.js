@@ -40,7 +40,7 @@ $(document).ready(function(){
             tr.find(".qty").val(1);
             tr.find(".price").val(data["product_price"]);
             tr.find(".amt").html(tr.find(".qty").val()*tr.find(".price").val());
-            calculate(0,0);
+            calculate(0,0); // function call
           }  
        })       
    })
@@ -57,14 +57,17 @@ $(document).ready(function(){
                // then set quantity 1 and set base price
                qty.val(1);
                tr.find(".amt").html(tr.find(".qty").val()*tr.find(".price").val());
+               calculate(0,0);// function call
            }else{
                // updated price, when updt the quantity
                tr.find(".amt").html(qty.val()*tr.find(".price").val());
-               calculate(0,0);
+               calculate(0,0);// function call
            }
        }
  
    })
+   
+   // calculation process of products
    
    function calculate(dis,paid){
        var sub_total = 0; 
@@ -141,7 +144,7 @@ $(document).ready(function(){
             }else if(data=="missing"){
                alert("Please! Fill all the records");
             }else if(data=="not_avail"){
-               alert("Currently product is not avaiable in stock");
+               alert("Currently product is not available in stock");
             }            
          }
        })

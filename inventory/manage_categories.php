@@ -6,14 +6,14 @@ if(!isset($_SESSION['userlogin'])){
     include_once ("classes/Category.php");
     $cat = new Category();
     $categories = $cat->getAllCategory();
-    
+ /*   
 if(isset($_GET['delcat'])){
     // category delete from category tbl
     $delcat = $_GET['delcat'];
     $delCategory = $cat->deleteCategory($delcat);    
     // refresh the page,
     echo "<meta http-equiv='refresh' content='0;URL=?id=live'/>";    
-}    
+} */   
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,7 +52,7 @@ if(isset($_GET['delcat'])){
             <table class="table table-striped table-bordered table-condensed table-hover text-center" id="example">
 
              <thead>
-                 <tr class="btn-danger text-center">
+                 <tr class="badge-info text-center">
                      <td><b>SL#</b></td>
                      <td><b>Category</b></td>
                      <td><b>Status</b></td>
@@ -66,19 +66,19 @@ if(isset($_GET['delcat'])){
              while ($result = $categories->fetch_assoc()) {
              $i++;
              ?>
-                 <tr id="get_cat">
+            <tr class="delete_cat<?php echo $result['catId']; ?>">
                 <td><?php echo $i;?></td>
                 <td><?php echo $result['category_name']; ?></td>
                 <td><a href="#" class="btn btn-success btn-sm">Active</a></td>
                 <td>
-                    <a onclick="return confirm('Are you sure to delete')" href="?delcat=<?php echo $result['catId']; ?>" class="btn btn-danger btn-sm"><i class="fa fa-trash">&nbsp;</i>Delete</a> 
-                    <a href="#" data-toggle="modal" data-target="#update_category" eid="<?php echo $result['catId']; ?>" class="btn btn-info btn-sm edit_cat"><i class="fa fa-edit">&nbsp;</i>Edit</a> 
+                    <a href="#" did="<?php echo $result['catId']; ?>" class="btn btn-outline-danger btn-sm"><i class="fa fa-trash">&nbsp;</i>Delete</a> 
+                    <a href="#" data-toggle="modal" data-target="#update_category" eid="<?php echo $result['catId']; ?>" class="btn btn-outline-warning btn-sm edit_cat"><i class="fa fa-edit">&nbsp;</i>Edit</a> 
                 </td>                                      
             </tr>
-             <?php }} ?>
+             <?php }}?>
              </tbody>
              <tfoot>
-                 <tr class="btn-danger text-center">
+                 <tr class="btn-info text-center">
                      <td></td>
                      <td></td>
                      <td></td>
@@ -92,6 +92,28 @@ if(isset($_GET['delcat'])){
                  </div>
              </div>            
          </div>
+     <script type="text/javascript">
+     // delete category      
+     $(document).ready(function() {
+      $('.btn-outline-danger').click(function() {
+      var did = $(this).attr("did");    
+      if(confirm("Are you sure you want to delete this Category?")){
+          $.ajax({
+              url: "includes/process.php",
+              method: "POST",
+              data: {deleteCategory:1,id:did},                    
+              cache: false,
+              success: function(html) {
+              $(".delete_cat" + did).fadeOut('slow');
+                  }    
+               })
+            }else{
+            return false;
+            }
+        })
+     })
+         </script>
+         
          <?php include_once("templates/update_category.php")?>
      <script>
          $(document).ready(function(){

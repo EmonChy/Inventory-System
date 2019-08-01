@@ -6,14 +6,14 @@ if(!isset($_SESSION['userlogin'])){
     include_once ("classes/Brand.php");
     $br = new Brand();
     $brands = $br->getAllBrand();
-    
+/*    
 if(isset($_GET['delbr'])){
     // brand delete from brand tbl
     $delbr = $_GET['delbr'];
     $delBrand = $br->deleteBrand($delbr);    
     // refresh the page,
     echo "<meta http-equiv='refresh' content='0;URL=?id=live'/>";    
-}
+}*/
 
     
 ?>
@@ -63,13 +63,13 @@ if(isset($_GET['delbr'])){
              while ($result = $brands->fetch_assoc()) {
              $i++;
              ?>
-            <tr>
+            <tr class="delete_br<?php echo $result['bId']; ?>">
                 <td><?php echo $i;?></td>
                 <td><?php echo $result['brand_name']; ?></td>
                 <td><a href="#" class="btn btn-success btn-sm">Active</a></td>
                 <td>
-                    <a onclick="return confirm('Are you sure to delete')" href="?delbr=<?php echo $result['bId']; ?>" class="btn btn-danger btn-sm"><i class="fa fa-trash">&nbsp;</i>Delete</a> 
-                    <a href="#" data-toggle="modal" data-target="#update_brand" eid="<?php echo $result['bId']; ?>" class="btn btn-info btn-sm edit_br"><i class="fa fa-edit">&nbsp;</i>Edit</a> 
+                    <a href="#" did="<?php echo $result['bId']; ?>" class="btn btn-outline-danger btn-sm"><i class="fa fa-trash">&nbsp;</i>Delete</a> 
+                    <a href="#" data-toggle="modal" data-target="#update_brand" eid="<?php echo $result['bId']; ?>" class="btn btn-outline-info btn-sm edit_br"><i class="fa fa-edit">&nbsp;</i>Edit</a> 
                 </td>                                      
             </tr>
              <?php }} ?>
@@ -88,13 +88,34 @@ if(isset($_GET['delbr'])){
                  </div>
              </div>            
          </div>
-         <?php include_once("templates/update_brand.php")?>
+              <script type="text/javascript">
+     // delete brand     
+     $(document).ready(function() {
+      $('.btn-outline-danger').click(function() {
+      var did = $(this).attr("did");    
+      if(confirm("Are you sure you want to delete this Brand?")){
+          $.ajax({
+              url: "includes/process.php",
+              method: "POST",
+              data: {deleteBrand:1,id:did},                    
+              cache: false,
+              success: function(html) {
+              $(".delete_br" + did).fadeOut('slow');
+                  }    
+               })
+            }else{
+            return false;
+            }
+        })
+     })
+         </script>
+          <?php include_once("templates/update_brand.php")?>
 
           <script>
-         $(document).ready(function(){
+          $(document).ready(function(){
                  $('#example').DataTable();
            });
-     </script>
+          </script>
              
      </body>
 </html>

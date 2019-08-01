@@ -3,6 +3,17 @@ session_start();
 if(!isset($_SESSION['userlogin'])){
     header('location: index.php');
 }else{
+    include_once ("classes/Product.php");
+    $pr = new Product();
+    $products = $pr->getAllProduct();
+    
+    $orders = $pr->getAllOrders();
+    
+    $stocks = $pr->getProductStocks();
+    
+    $totalRevenue = $pr->getAllOrders();// used for revenue
+    
+    
 ?>
 <!DOCTYPE html>
 <html>
@@ -38,18 +49,83 @@ if(!isset($_SESSION['userlogin'])){
             </div>
             <div class="col-md-8">
                 <div class="jumbotron" style="width: 100%;height: 100%">
-                    <h1>Welcome Admin</h1>
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
+                            <div class="card bg-info mb-3">
+                                <p class="card-header">
+                                    <a href="manage_products.php" style="text-decoration:none;color:white;">
+                                        Total Products<span class="badge badge-light float-right">
+                                        <?php
+                                        if($products){
+                                        echo mysqli_num_rows($products);
+                                        }else{ echo 0;}?></span>				   
+                                    </a>                                 
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-sm-4"> 
+                          <div class="card bg-success mb-3">
+                                <p class="card-header">
+                                    <a href="" style="text-decoration:none;color:white;">
+                                        Total Orders<span class="badge badge-light float-right">
+                                        <?php
+                                        if($orders){
+                                        echo mysqli_num_rows($orders);
+                                        }else{ echo 0;}?>  
+                                        </span>				   
+                                    </a>                                 
+                                </p>
+                            </div>  
+                            
+                        </div>
+                        <div class="col-sm-4">
+                             <div class="card bg-danger mb-3">
+                                <p class="card-header">
+                                    <a href="manage_products.php" style="text-decoration:none;color:white;">
+                                        Low Stock<span class="badge badge-light float-right">
+                                        <?php 
+                                        if($stocks){
+                                        echo mysqli_num_rows($stocks);
+                                        }else{ echo 0;}?>   
+                                        </span>				   
+                                    </a>                                 
+                                </p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <br>
+                    <div class="row">
+                        
+                        <div class="col-sm-4">
                           <iframe src="http://free.timeanddate.com/clock/i6u7be96/n73/szw160/szh160/cf100/hnce1ead6" frameborder="0" width="160" height="160"></iframe>
   
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
+                  
+                            
+                        <div class="card text-white bg-dark mb-3">
+                                <div class="card-header text-center">Total Revenue</div>
+                                <div class="card-body text-center ">
+                                    <h5><?php
+                                    if($totalRevenue){
+                                       $total=0;
+                                        while($result = $totalRevenue->fetch_assoc()){
+                                            $total = $total+$result['paid'];
+                                        }
+                                         
+                                    echo 'RS'.' '.$total;}else{echo 'RS'.' '.'0';} ?></h5>
+                                </div>
+                        </div>
+                        </div>
+                        <div class="col-sm-4">
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">New Orders</h5>
-                                    <p class="card-text">Here you can make invoices and create new orders</p>
-                                    <a href="new_orders.php" class="btn btn-primary">New Orders</a>
+                                    <h5 class="card-title">Orders</h5>
+                                    <p class="card-text">Here you can make invoices and create orders and manage</p>
+                                    <a href="new_orders.php" class="btn btn-sm btn-outline-primary">New</a>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary">Manage</a>
+
                                 </div>
                             </div>
                         </div>
@@ -63,9 +139,9 @@ if(!isset($_SESSION['userlogin'])){
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Categories</h5>
-                            <p class="card-text">Here you can manage your categories and you add new parent and sub categories</p>
-                            <a href="#" data-toggle="modal" data-target="#form_category" class="btn btn-primary">Add</a>
-                            <a href="manage_categories.php" class="btn btn-success">Manage</a>
+                            <p class="card-text">Here you can manage your categories and add new categories</p>
+                            <a href="#" data-toggle="modal" data-target="#form_category" class="btn btn-outline-primary">Add</a>
+                            <a href="manage_categories.php" class="btn btn-outline-success">Manage</a>
                         </div>
                     </div> 
                 </div>
@@ -73,9 +149,9 @@ if(!isset($_SESSION['userlogin'])){
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Brands</h5>
-                            <p class="card-text">Here you can manage your brands and new brands</p>
-                            <a href="#" data-toggle="modal" data-target="#form_brand" class="btn btn-primary">Add</a>
-                            <a href="manage_brands.php" class="btn btn-success">Manage</a>
+                            <p class="card-text">Here you can manage your brands and add new brands</p>
+                            <a href="#" data-toggle="modal" data-target="#form_brand" class="btn btn-outline-primary">Add</a>
+                            <a href="manage_brands.php" class="btn btn-outline-success">Manage</a>
                         </div>
                     </div>
                 </div>
@@ -83,9 +159,9 @@ if(!isset($_SESSION['userlogin'])){
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Products</h5>
-                            <p class="card-text">Here you can manage your products and new products</p>
-                            <a href="#" data-toggle="modal" data-target="#form_product" class="btn btn-primary">Add</a>
-                            <a href="manage_products.php" class="btn btn-success">Manage</a>
+                            <p class="card-text">Here you can manage your products and add new products</p>
+                            <a href="#" data-toggle="modal" data-target="#form_product" class="btn btn-outline-primary">Add</a>
+                            <a href="manage_products.php" class="btn btn-outline-success">Manage</a>
                         </div>
                     </div>
                 </div>

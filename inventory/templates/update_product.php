@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Update Brand</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Update Product</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -41,6 +41,18 @@
                         <label>Quantity</label>
                         <input type="text" class="form-control" name="product_qty" id="product_qty" placeholder="Enter quantity" required="">              
                     </div>
+                   <div class="form-group">
+                       
+                        <label>Status</label>
+                        <select class="form-control" id="updt_stat" name="updt_stat">
+					      	<option value="">~~SELECT~~</option>
+					      	<option value="1">Available</option>
+					      	<option value="0">Not Available</option>
+					      </select>
+<!--                        <input type="number" class="form-control" name="updt_stat" id="updt_stat"  required="">              -->
+                   <small id="updt_stat_error" class="form-text text-muted"></small>
+ 
+                   </div>
                   
                     <button type="submit" class="btn btn-success">Update</button>
                 </form>

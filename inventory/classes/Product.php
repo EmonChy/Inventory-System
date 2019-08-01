@@ -54,6 +54,8 @@ class Product {
         return $result; 
     }
     
+   
+    
     public function deleteProduct($delpr) {
         $delpr = $this->fm->validation($delpr); /// validation
 
@@ -62,11 +64,13 @@ class Product {
         $query = "DELETE FROM product WHERE pId='$delpr'";
         $result = $this->db->delete($query);
          if ($result) {
-            $msg = "<span style = 'color:green;font-weight:bold'>Brand deleted successfully!!</span>";
-            return $msg;
+             return "Product_Deleted";
+            //$msg = "<span style = 'color:green;font-weight:bold'>Brand deleted successfully!!</span>";
+            //return $msg;
             }else{
-            $msg = "<span style = 'color:red;font-weight:bold'>Something Wrong! not deleted</span>";
-            return $msg;
+                return 0;
+            //$msg = "<span style = 'color:red;font-weight:bold'>Something Wrong! not deleted</span>";
+            //return $msg;
           }
     }
     
@@ -76,7 +80,7 @@ class Product {
        return $result; 
     }
     
-    public function updateProduct($pId,$cId,$bId,$product_name,$product_price,$product_qty,$date){
+    public function updateProduct($pId,$cId,$bId,$product_name,$product_price,$product_qty,$date,$status){
        $pId = $this->fm->validation($pId); /// validation
        $cId = $this->fm->validation($cId); /// validation
        $bId = $this->fm->validation($bId); /// validation
@@ -84,6 +88,8 @@ class Product {
        $product_price = $this->fm->validation($product_price); /// validation
        $product_qty = $this->fm->validation($product_qty); /// validation
        $date = $this->fm->validation($date); /// validation
+       $status = $this->fm->validation($status); /// validation
+
        
        $pId = mysqli_real_escape_string($this->db->link, $pId);
        $cId = mysqli_real_escape_string($this->db->link, $cId);
@@ -92,6 +98,8 @@ class Product {
        $product_price = mysqli_real_escape_string($this->db->link, $product_price);
        $product_qty = mysqli_real_escape_string($this->db->link, $product_qty);
        $date = mysqli_real_escape_string($this->db->link, $date);
+       $status = mysqli_real_escape_string($this->db->link, $status);
+
       
         $query = "UPDATE product
                   SET
@@ -100,7 +108,8 @@ class Product {
                   product_name = '$product_name',
                   product_price = '$product_price',
                   product_stock = '$product_qty',
-                  date = '$date'                          
+                  date = '$date',
+                  status = '$status'    
                   WHERE pId = '$pId'";    
 
      $pdupdate = $this->db->update($query);
@@ -110,6 +119,13 @@ class Product {
             return 0;
         }
 
+    }
+    
+    // used in order page 
+    public function getAllActiveProduct() {
+        $query = "SELECT * FROM product WHERE product_stock>0 AND status=1 ORDER BY pId DESC";
+        $result = $this->db->select($query);
+        return $result; 
     }
     
    public function storeOrderInvoice($order_date,$cust_name,$ar_tqty,$ar_qty,$ar_price,$ar_pro_name,$sub_total,$gst,$discount,$net_total,$paid,$due,$payment_type) {
@@ -161,24 +177,50 @@ class Product {
          if($invoice_no!=null){
           for($i=0;$i<count($ar_price);$i++){
               // here we find the remaining quantity after giving customer
-              $remain_qty = $ar_tqty[$i]-$ar_qty[$i];
-                    if($remain_qty<0){
+              $remain_qty = $ar_tqty[$i]-$ar_qty[$i];  
+              
+              /*      if($remain_qty<0){
                         return "not_avail";
-                    }else{
+                    }else{ */
                         $query ="UPDATE `product` 
                                  SET 
                                 `product_stock`='$remain_qty'
                                  WHERE product_name='$ar_pro_name[$i]'";
-
                         $quantityUpdt = $this->db->update($query);
-                    }              
+                        
+                        // if product stock is zero,than status will be 1 
+                        
+                        if($remain_qty==0){
+                            $squery ="UPDATE `product` 
+                                     SET 
+                                    `status`= '0'
+                                     WHERE product_name='$ar_pro_name[$i]'";
+                            $statusUpdt = $this->db->update($squery);                        
+                           }                        
+                 /*   } */                    
              $innerquery = "INSERT INTO `invoice_details`(`invoice_no`, `product_name`, `price`, `qty`) VALUES ('$invoice_no','$ar_pro_name[$i]','$ar_price[$i]','$ar_qty[$i]')"; 
-             $result = $this->db->insert($innerquery);              
+             $result = $this->db->insert($innerquery);             
           }
-           return $invoice_no;
- 
+          return $invoice_no; 
         }
-       }
+     }
+   }
+   
+   
+   public function getAllOrders() {
+        $query = "SELECT * FROM invoice";
+        $result = $this->db->select($query);
+        return $result; 
+   }
+   // for low products used in dashboard
+   public function getProductStocks(){
+        $query = "SELECT * FROM product WHERE product_stock<=3 AND status=1";
+        $result = $this->db->select($query);
+        return $result; 
+   }
+   
+   public function totalrevenue() {
+       
    }
   
 }

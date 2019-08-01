@@ -113,6 +113,7 @@ $(document).ready(function(){
         success : function(data){
             if(data=="updated")
             window.location.href="";
+            //document.location.reload(true);    
           }
                                           
         })
@@ -161,6 +162,30 @@ $(document).ready(function(){
         })
       }
   })
+  /*
+      $("body").delegate(".del_pr","click",function(){
+      var did = $(this).attr("did");    
+      if(confirm("Are you sure you want to delete this Member?")){
+          $.ajax({
+              url: "includes/process.php",
+              method: "POST",
+              data: {deleteProduct:1,id:did},                    
+              cache: false,
+              success: function(data){
+               console.log(data);
+               if(data=="Product_Deleted"){
+               alert("data deleted successfully");
+               window.location.href="";
+               }else{
+               alert("Oops!! Not deleted");
+               }
+           }
+        })
+       }else{
+          return false;
+      }
+  })  */
+        
   
    // product record fetch from db and send to modal   
  $("body").delegate( ".edit_pr", "click", function(){
@@ -178,12 +203,20 @@ $(document).ready(function(){
         $("#select_cat").val(data["cId"]);         
         $("#select_brand").val(data["bId"]);         
         $("#product_price").val(data["product_price"]);         
-        $("#product_qty").val(data["product_stock"]);         
+        $("#product_qty").val(data["product_stock"]);    
+        $("#updt_stat").val(data["status"]);    
+        
         }   
     })
   })
   // update product form
   $("#update_prd_form").on("submit",function(){
+      var status = $("#updt_stat");
+      if(!(status.val()==='0'||status.val()==='1')){
+          status.addClass("border-danger");
+          $("#updt_stat_error").html("<span class='text-danger'>Status Only 0 OR 1</span>");             
+          //status.val(status);    
+      }else{      
         $.ajax({
             url : "includes/process.php",
          method : "POST",
@@ -194,9 +227,9 @@ $(document).ready(function(){
             window.location.href="";                          
            }           
         }                 
-        })  
-    })
-  
+        })
+      }  
+    })  
   
 })
 

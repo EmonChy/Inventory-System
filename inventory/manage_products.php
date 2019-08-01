@@ -6,7 +6,7 @@ if(!isset($_SESSION['userlogin'])){
     include_once ("classes/Product.php");
     $pr = new Product();
     $products = $pr->getAllProduct();
-    
+/*    
 if(isset($_GET['delpr'])){
     // brand delete from brand tbl
     $delpr = $_GET['delpr'];
@@ -14,6 +14,8 @@ if(isset($_GET['delpr'])){
     // refresh the page,
     echo "<meta http-equiv='refresh' content='0;URL=?id=live'/>";    
 }
+ * 
+ */
 
     
 ?>
@@ -42,7 +44,7 @@ if(isset($_GET['delpr'])){
              <div class="row">
                  <div class="col-md-12">
                      <div class="card" style="background-color: whitesmoke;">
-                         <h3 class="text-center" style="font-family: cursive">Current Available Products</h3>
+                         <h3 class="text-center" style="font-family: cursive">Products Records</h3>
 
                          <div class="card-body">
                              <?php
@@ -54,7 +56,7 @@ if(isset($_GET['delpr'])){
             <table class="table table-striped table-bordered table-condensed table-hover text-center" id="example">
 
              <thead>
-                 <tr class="btn-danger text-center">
+                 <tr class="badge-info text-center">
                      <td><b>SL#</b></td>
                      <td><b>Product</b></td>
 
@@ -76,7 +78,7 @@ if(isset($_GET['delpr'])){
              while ($result = $products->fetch_assoc()) {
              $i++;
              ?>
-            <tr>
+            <tr class="delete_pro<?php echo $result['pId']; ?>">
                 <td><?php echo $i;?></td>
                 <td><?php echo $result['product_name']; ?></td>
                 <td><?php echo $result['category_name']; ?></td>
@@ -85,16 +87,24 @@ if(isset($_GET['delpr'])){
                 <td><?php echo $result['product_stock']; ?></td>
                 <td><?php echo $result['date']; ?></td>
                 
-                <td><a href="#" class="btn btn-success btn-sm">Active</a></td>
                 <td>
-                    <a onclick="return confirm('Are you sure to delete')" href="?delpr=<?php echo $result['pId']; ?>" class="btn btn-danger btn-sm"><i class="fa fa-trash">&nbsp;</i>Delete</a> 
-                    <a href="#" data-toggle="modal" data-target="#update_product" eid="<?php echo $result['pId']; ?>" class="btn btn-info btn-sm edit_pr"><i class="fa fa-edit">&nbsp;</i>Edit</a> 
+                    <?php if($result['status']==0) {?>
+                    <a href="#" class="badge badge-danger">Non available</a>
+                    <?php }else{ ?>
+                    <a href="#" class="badge badge-success">Available</a> 
+                    <?php } ?>
+                </td>
+                <td>
+<!--                    <a href="#" class="btn btn-danger" id="<?php echo $result['pId']; ?>">Delete</a>-->
+
+                    <a href="#" did="<?php echo $result['pId']; ?>" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash">&nbsp;</i>Delete</a>
+                    <a href="#" data-toggle="modal" data-target="#update_product" eid="<?php echo $result['pId']; ?>" class="btn btn-outline-warning btn-sm edit_pr"><i class="fa fa-edit">&nbsp;</i>Edit</a> 
                 </td>                                      
             </tr>
              <?php }} ?>
              </tbody>
              <tfoot>
-                 <tr class="btn-danger text-center">
+                 <tr class="badge-info text-center">
                      <td></td>
                      <td></td>
                      <td></td>
@@ -112,13 +122,34 @@ if(isset($_GET['delpr'])){
                  </div>
              </div>            
          </div>
+      <script type="text/javascript">
+    // delete product      
+     $(document).ready(function() {
+      $('.btn-outline-danger').click(function() {
+      var did = $(this).attr("did");    
+      if(confirm("Are you sure you want to delete this Product?")){
+          $.ajax({
+              url: "includes/process.php",
+              method: "POST",
+              data: {deleteProduct:1,id:did},                    
+              cache: false,
+              success: function(html) {
+              $(".delete_pro" + did).fadeOut('slow');
+                  }    
+               })
+            }else{
+            return false;
+            }
+        })
+     })
+         </script>
+         
          <?php include_once("templates/update_product.php")?>
-
           <script>
-         $(document).ready(function(){
+           $(document).ready(function(){
                  $('#example').DataTable();
            });
-     </script>
+          </script>
              
      </body>
 </html>
