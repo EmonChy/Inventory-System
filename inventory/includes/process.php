@@ -189,8 +189,7 @@ if(isset($_POST['updt_pr'])){
 if(isset($_POST['getNewOrderForm'])){
    $result = $pr->getAllActiveProduct();
    ?>
-   <tr>
-      
+   <tr>      
        <td><b class="number">1</b></td>
         <td><select name="pId[]" class="form-control form-control-sm pId" required="">
                 <option>Choose Product</option>      
@@ -203,10 +202,14 @@ if(isset($_POST['getNewOrderForm'])){
             <option value="<?php echo $rows['pId'];?>"><?php echo $rows['product_name'];?></option>
                    <?php }}?>
         </select></td>
-        <td><input type="text" name="tqty[]" readonly="" class="form-control form-control-sm tqty" required=""/></td>    
+            
+  
+<!--        <td><span><input type="hidden" name="proId[]" readonly="" class="form-control form-control-sm proId" required=""/></span>-->
+            <td><input type="text" name="tqty[]" readonly="" class="form-control form-control-sm tqty" required=""/>
+            </td>    
         <td><input type="text" name="qty[]" class="form-control form-control-sm qty" required=""/></td>    
         <td><input type="text" name="price[]" readonly="" class="form-control form-control-sm price" required=""/>   
-            <span><input type="hidden" name="pro_name[]" class="form-control form-control-sm pro_name"/></span></td>    
+        <span><input type="hidden" name="pro_name[]" class="form-control form-control-sm pro_name"/></span></td>    
        
         <td>Rs.<span class="amt">0</span></td>
   </tr> 
@@ -235,6 +238,7 @@ if(isset($_POST['order_date']) AND isset($_POST['cust_name'])){
    $ar_qty       = $_POST['qty'];
    $ar_price     = $_POST['price'];
    $ar_pro_name  = $_POST['pro_name'];
+   $ar_pro_id    = $_POST['pId'];
    
    $sub_total    = $_POST['sub_total'];
    $gst          = $_POST['gst'];
@@ -244,7 +248,7 @@ if(isset($_POST['order_date']) AND isset($_POST['cust_name'])){
    $due          = $_POST['due'];
    $payment_type = $_POST['payment_type'];
    
-   $result = $pr->storeOrderInvoice($order_date,$cust_name,$ar_tqty,$ar_qty,$ar_price,$ar_pro_name,$sub_total,$gst,$discount,$net_total,$paid,$due,$payment_type); 
+   $result = $pr->storeOrderInvoice($order_date,$cust_name,$ar_tqty,$ar_qty,$ar_price,$ar_pro_name,$ar_pro_id,$sub_total,$gst,$discount,$net_total,$paid,$due,$payment_type); 
    echo $result;
    exit();
    

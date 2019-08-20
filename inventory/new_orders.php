@@ -70,8 +70,8 @@ if(!isset($_SESSION['userlogin'])){
                                                  </tbody>
                                              </table><!-- Table Ends-->
                                              <center style="padding-top: 10px">
-                                                 <button id="add" style="width: 150px;" class="btn btn-success" >Add</button>
-                                                 <button id="remove" style="width: 150px;" class="btn btn-danger" >Remove</button>
+                                                 <button id="add" style="width: 150px;" class="btn btn-success"><i class="fa fa-plus">&nbsp;</i>Add</button>
+                                                 <button id="remove" style="width: 150px;" class="btn btn-danger"><i class="fa fa-crosshairs">&nbsp;</i>Remove</button>
                                              
                                              </center>
                                          </div><!-- Card Body Ends-->
@@ -119,7 +119,7 @@ if(!isset($_SESSION['userlogin'])){
                                             <label for="payment_type" class="col-sm-3 col-form-label" align="right">Payment Method</label>
                                              <div class="col-sm-6">
                                                  <select name="payment_type" id="payment_type" class="form-control form-control-sm" required="">
-                                                                 <option>Choose Type</option>
+                                                                 <option value="">Choose Type</option>
                                                                  <option value="Cash">Cash</option>
                                                                  <option value="Card">Card</option>
                                                                  <option value="Draft">Draft</option>

@@ -68,7 +68,7 @@
             cat.removeClass("border-danger");
             $("#cat_error").html("<span class='text-success'>New Category Added Successfully</span>");
             cat.val("");
-            fetch_category();// this is used in product page
+            fetch_category();     // this is used in product page
             }else if(data=="Category_Exist"){
             cat.removeClass("border-danger");
             $("#cat_error").html("<span class='text-danger'>Already Same Category Exist</span>");

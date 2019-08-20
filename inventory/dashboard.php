@@ -43,7 +43,7 @@ if(!isset($_SESSION['userlogin'])){
                         <p class="card-text"><i class="fa fa-user">&nbsp;</i><?php echo $_SESSION['uName'];?></p>
                         <p class="card-text"><i class="fa fa-user">&nbsp;</i><?php echo $_SESSION['uType'];?></p>
                         <p class="card-text"><i class="fa fa-clock-o">&nbsp;</i>Last Login : <?php echo $_SESSION['last_login']; ?></p>
-                        <a href="#" class="btn btn-primary"><i class="fa fa-edit">&nbsp;</i>Edit Profile</a>
+                        <a href="setting.php" class="btn btn-primary"><i class="fa fa-edit">&nbsp;</i>Settings</a>
                     </div>
                 </div>
             </div>
@@ -66,7 +66,7 @@ if(!isset($_SESSION['userlogin'])){
                         <div class="col-sm-4"> 
                           <div class="card bg-success mb-3">
                                 <p class="card-header">
-                                    <a href="" style="text-decoration:none;color:white;">
+                                    <a href="manage_orders.php" style="text-decoration:none;color:white;">
                                         Total Orders<span class="badge badge-light float-right">
                                         <?php
                                         if($orders){
@@ -124,7 +124,7 @@ if(!isset($_SESSION['userlogin'])){
                                     <h5 class="card-title">Orders</h5>
                                     <p class="card-text">Here you can make invoices and create orders and manage</p>
                                     <a href="new_orders.php" class="btn btn-sm btn-outline-primary">New</a>
-                                    <a href="#" class="btn btn-sm btn-outline-secondary">Manage</a>
+                                    <a href="manage_orders.php" class="btn btn-sm btn-outline-secondary">Manage</a>
 
                                 </div>
                             </div>

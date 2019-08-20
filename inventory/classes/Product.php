@@ -128,7 +128,7 @@ class Product {
         return $result; 
     }
     
-   public function storeOrderInvoice($order_date,$cust_name,$ar_tqty,$ar_qty,$ar_price,$ar_pro_name,$sub_total,$gst,$discount,$net_total,$paid,$due,$payment_type) {
+   public function storeOrderInvoice($order_date,$cust_name,$ar_tqty,$ar_qty,$ar_price,$ar_pro_name,$ar_pro_id,$sub_total,$gst,$discount,$net_total,$paid,$due,$payment_type){
      /*
       
       $order_date = $this->fm->validation($order_date); /// validation
@@ -162,17 +162,29 @@ class Product {
 
       */
        
-       if(empty($cust_name)||empty($paid)||empty($payment_type)){
+       if($cust_name==""||$paid==""||$payment_type==""){
            return "missing";
        }else{       
-        $key    = substr(md5(uniqid(rand(0,9), true)),4,4);      
-        $query  = "INSERT INTO `invoice`(`ck_key`,`cust_name`, `order_date`, `sub_total`, `gst`, `discount`, `net_total`, `paid`, `due`, `payment_type`) VALUES ('$key','$cust_name','$order_date','$sub_total','$gst','$discount','$net_total','$paid','$due','$payment_type')";
+        $key    = substr(md5(uniqid(rand(0,9), true)),4,4);
+        // used to find total qty purchased by a user
+        $total_qty_product = 0;          
+          for($k=0;$k<count($ar_qty);$k++){
+            $total_qty_product = $total_qty_product+$ar_qty[$k];
+            }
+        // used to find total items purchased by a user
+        $total_items = 0;          
+          for($j=0;$j<count($ar_qty);$j++){
+            $total_items = $total_items+$ar_qty[$j];
+            }   
+            
+        $query  = "INSERT INTO `invoice`(`ck_key`,`cust_name`, `order_date`, `sub_total`, `gst`, `discount`, `net_total`, `paid`, `due`, `payment_type`,`total_qty`,`total_item`) VALUES ('$key','$cust_name','$order_date','$sub_total','$gst','$discount','$net_total','$paid','$due','$payment_type','$total_qty_product','$total_items')";
         $result = $this->db->insert($query); 
            
         $getInvoice = "SELECT * FROM invoice WHERE ck_key='$key'";
         $row = $this->db->select($getInvoice)->fetch_assoc();
       
         $invoice_no = $row['invoice_no'];
+        //$invoice_no = $mysqli->insert_id;
       
          if($invoice_no!=null){
           for($i=0;$i<count($ar_price);$i++){
@@ -188,6 +200,9 @@ class Product {
                                  WHERE product_name='$ar_pro_name[$i]'";
                         $quantityUpdt = $this->db->update($query);
                         
+
+                         
+                        
                         // if product stock is zero,than status will be 1 
                         
                         if($remain_qty==0){
@@ -197,9 +212,21 @@ class Product {
                                      WHERE product_name='$ar_pro_name[$i]'";
                             $statusUpdt = $this->db->update($squery);                        
                            }                        
-                 /*   } */                    
-             $innerquery = "INSERT INTO `invoice_details`(`invoice_no`, `product_name`, `price`, `qty`) VALUES ('$invoice_no','$ar_pro_name[$i]','$ar_price[$i]','$ar_qty[$i]')"; 
-             $result = $this->db->insert($innerquery);             
+                 /*   } */
+
+                        
+             // first insert
+             $i_status = 1;
+             
+             $innerquery = "INSERT INTO `invoice_details`(`invoice_no`,`pId`, `product_name`, `price`, `qty`,`total_qty`,`i_status`) VALUES ('$invoice_no','$ar_pro_id[$i]','$ar_pro_name[$i]','$ar_price[$i]','$ar_qty[$i]','$ar_tqty[$i]','$i_status')"; 
+             $result = $this->db->insert($innerquery);
+             // then update the total quantity
+             // both query execute at the same time
+             $query_invoice ="UPDATE `invoice_details` 
+                              SET 
+                             `total_qty`='$remain_qty'
+                              WHERE product_name='$ar_pro_name[$i]'";
+          $quantityUpdtInvoice = $this->db->update($query_invoice);
           }
           return $invoice_no; 
         }
@@ -219,8 +246,113 @@ class Product {
         return $result; 
    }
    
-   public function totalrevenue() {
-       
+   // fetch invoice of all customers 
+   
+   public function getCustomerOrderDetails(){
+        $query = "SELECT * FROM invoice ORDER BY invoice_no DESC";
+        $result = $this->db->select($query);
+        return $result;  
    }
-  
+   
+   // fetch invoice of each customer by their ID
+   
+   public function getOrder($invoice_no){
+      
+       $query = "SELECT * FROM invoice WHERE invoice_no = '$invoice_no'";
+       $result = $this->db->select($query)->fetch_assoc();
+       return $result; 
+    
+   }
+   
+   // fetch invoice details of each customer
+   
+   public function getInvoiceDetails($invoice_no){
+       $query = "SELECT * FROM invoice_details WHERE invoice_no = '$invoice_no'";
+       $result = $this->db->select($query);
+       return $result;        
+   }
+   
+   
+   public function UpdateOrderInvoice($invoice,$order_date,$cust_name,$ar_tqty,$ar_qty,$ar_price,$ar_pro_name,$ar_pro_id,$sub_total,$gst,$discount,$net_total,$paid,$due,$payment_type){    
+       if($cust_name==""||$paid==""||$payment_type==""){
+           return "missing";
+       }else{        
+          $getInvoice = "SELECT * FROM invoice WHERE invoice_no='$invoice'";
+          $row = $this->db->select($getInvoice)->fetch_assoc();
+      
+          $total_qty_product = 0;         
+            for($k=0;$k<count($ar_qty);$k++){
+               $total_qty_product = $total_qty_product+$ar_qty[$k];
+            }            
+        $query = "UPDATE invoice 
+                 SET
+                 order_date= '$order_date',
+                 sub_total = '$sub_total',
+                 gst       = '$gst',
+                 discount  = '$discount',
+                 net_total = '$net_total',
+                 paid      = '$paid',
+                 due       = '$due',
+              payment_type = '$payment_type',
+                 total_qty = '$total_qty_product' 
+                     
+                 WHERE invoice_no = '$invoice'";
+        
+        $result = $this->db->update($query);
+        
+                   
+        $getInvoice = "SELECT * FROM invoice WHERE invoice_no='$invoice'";
+        $row = $this->db->select($getInvoice)->fetch_assoc();
+      
+        $invoice_no = $row['invoice_no'];
+       
+         if($invoice_no==$invoice){
+          for($i=0;$i<count($ar_price);$i++){
+             
+              // here we find the remaining quantity after giving customer
+              $remain_qty = $ar_tqty[$i]-$ar_qty[$i];  
+             
+                $query ="UPDATE `product` 
+                         SET 
+                        `product_stock`='$remain_qty'
+                         WHERE product_name='$ar_pro_name[$i]'";
+                $quantityUpdt = $this->db->update($query);
+
+                // if product stock is zero,than status will be 1 
+
+                if($remain_qty==0){
+                    $squery ="UPDATE `product` 
+                             SET 
+                            `status`= '0'
+                             WHERE product_name='$ar_pro_name[$i]'";
+                    $statusUpdt = $this->db->update($squery);                        
+                 }
+                 
+                // fetch individual qty's from each customer 
+                
+                 $getQty = "SELECT * FROM invoice_details WHERE invoice_no='$invoice' AND qty='$ar_qty[$i]'";
+                $rows = $this->db->select($getQty);
+                    if($rows){
+                         while($val = $rows->fetch_assoc()){
+                                     $qty = $val['qty'];
+                         }
+                    }
+                    
+                 // check if user entry input qty is more than previous input qty   
+                 // then it will update, otherwise not
+                    
+                 if($ar_qty[$i]>$qty){    
+                 $updtquantity ="UPDATE `invoice_details` 
+                                 SET
+                                 qty   = '$ar_qty[$i]',
+                              total_qty= '$remain_qty'                               
+                              WHERE invoice_no = '$invoice' AND pId = '$ar_pro_id[$i]'"; 
+                 $Updtqty = $this->db->update($updtquantity); 
+                 }                 
+          }
+          return $invoice_no; 
+        }
+      
+    }   
+  }  
 }

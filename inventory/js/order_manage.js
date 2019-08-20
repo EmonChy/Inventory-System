@@ -1,53 +1,7 @@
-$(document).ready(function(){
-    // function call
-    addNewRow();
-    // action for add
-    $("#add").click(function(){
-        addNewRow();
-    })
-    function addNewRow(){
-    $.ajax({
-        url:"includes/process.php",
-     method:"POST",
-      data : {getNewOrderForm:1},
-    success: function(data){
-        $("#invoice_item").append(data);
-        // this is used to increment the serial number
-        var n=0;
-        $(".number").each(function(){
-            $(this).html(++n);   
-          })
-        }        
-     })
-   }
-   // action for remove 
-   $("#remove").click(function(){
-       $("#invoice_item").children("tr:last").remove();
-       calculate(0,0); // when user click, all the calculations will be decrease  
-   })
-   // when user adding products,input fields will get value by their respective products
-   $("#invoice_item").delegate(".pId","change",function(){
-       var pId = $(this).val();
-       var tr  = $(this).parent().parent();
-       $.ajax({
-           url:"includes/process.php",
-        method:"POST",
-      dataType:"json",
-          data:{getPriceAndQty:1,id:pId},
-       success:function(data){
-            tr.find(".pId").val(data["pId"]);
-           
-            tr.find(".tqty").val(data["product_stock"]);
-            tr.find(".pro_name").val(data["product_name"]);
-            tr.find(".qty").val(1);
-            tr.find(".price").val(data["product_price"]);
-            tr.find(".amt").html(tr.find(".qty").val()*tr.find(".price").val());
-            calculate(0,0); // function call
-          }  
-       })       
-   })
+$(document).ready(function(){      
+   // when user update in update_orders.php
    // when user update the quantity,then this section will work
-   $("#invoice_item").delegate(".qty","keyup",function(){
+   $("#invoice_item_updt").delegate(".qty","keyup",function(){
        var qty = $(this);
        var tr  = $(this).parent().parent();
        if(isNaN(qty.val())){
@@ -67,10 +21,8 @@ $(document).ready(function(){
            }
        }
  
-   })
-   
-   // calculation process of products
-   
+   })       
+   // calculation process of products   
    function calculate(dis,paid){
        var sub_total = 0; 
        var gst = 0;
@@ -125,20 +77,18 @@ $(document).ready(function(){
        calculate(discount,paid); // call the function and passes parameter discount and paid
    })
    
-   
-   
-   //----Order info saved into db--------
-   
-   $("#order_form").click(function(){
-       var invoice = $("#get_ordered_data").serialize();
-       
+      //----Updated Order info saved into db--------
+
+        
+   $("#order_form_update").click(function(){
+       var invoice = $("#get_ordered_update_data").serialize();    
            $.ajax({
-           url: "includes/process.php",
+           url: "includes/process_order_update.php",
         method: "POST",
-          data: $("#get_ordered_data").serialize(),
+          data: $("#get_ordered_update_data").serialize(),
       success:function(data){
             if(data>0){
-                $("#get_ordered_data").trigger("reset");                
+                window.location.href="";
                 if(confirm("Do you want to print invoice?")){
                 window.location.href="includes/invoice_bill.php?invoice_no="+data+"&"+invoice;  
                 }
@@ -148,8 +98,7 @@ $(document).ready(function(){
                alert("Currently product is not available in stock");
             }            
          }
-       })
+       });
      
-   })
-     
+   });  
 });

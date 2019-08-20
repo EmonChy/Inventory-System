@@ -42,7 +42,7 @@ if($_SERVER["REQUEST_METHOD"]== 'POST' && isset($_POST['user_login'])){
                       </button>
                     </div>
                     <?php }?>                     
-                    <form action="" method="post">
+                    <form action="" method="post" autocomplete="off">
                         <div class="form-group">
                             <label for="email">Email address</label>
                             <input type="email" class="form-control" name="uEmail" id="email"  placeholder="Enter email" required="">
